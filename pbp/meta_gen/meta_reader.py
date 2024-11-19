@@ -76,7 +76,7 @@ class AudioFile:
 
 
 class SoundTrapWavFile(AudioFile):
-    def __init__(self, path_or_url: str, xml_file: str, start: datetime):
+    def __init__(self, path_or_url: str, start: datetime):
         """
         SoundTrapWavFile uses the metadata from the xml files, not the wav file itself
         :param path_or_url:
@@ -88,43 +88,33 @@ class SoundTrapWavFile(AudioFile):
         :param start:
         """
         super().__init__(path_or_url, start)
-        try:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-        except ET.ParseError:
-            raise ValueError(f"Error reading {xml_file}. Empty metadata")
-        wav_start_dt = None
-        wav_stop_dt = None
-        sample_count = None
-
-        # Iterate over the XML elements grabbing the needed metadata values
-        for element in root.iter("WavFileHandler"):
-            # Get the value of the id attribute
-            value = element.get("SamplingStartTimeUTC")
-            if value:
-                wav_start_dt = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-
-            value = element.get("SamplingStopTimeUTC")
-            if value:
-                wav_stop_dt = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-
-            value = element.get("SampleCount")
-            if value:
-                sample_count = int(value)
-
-        # Error checking
-        if not wav_start_dt or not wav_stop_dt or not sample_count:
-            raise ValueError(f"Error reading {xml_file}. Missing metadata")
-
         self.path_or_url = path_or_url
-        self.start = wav_start_dt
-        self.end = wav_stop_dt
-        self.duration_secs = sample_count / 48000
-        self.fs = 48000
-        self.frames = sample_count
-        self.channels = 1
+        self.start = start
+        self.end = None
+        self.duration_secs = None
+        self.fs = None
+        self.frames = None
+        self.channels = None
         self.subtype = "SoundTrap"
         self.exception = ""  # no exceptions for SoundTrap  files
+        try:
+            self._read_wav_metadata()
+        except ValueError as ex:
+            raise ValueError(f"Error reading {self.path_or_url}. {ex}")
+
+    def _read_wav_metadata(self):
+        # read the wav file to get the metadata
+        metadata = sf.info(self.path_or_url)
+        self.fs = metadata.samplerate
+        self.frames = metadata.frames
+        self.channels = metadata.channels
+        self.duration_secs = metadata.duration
+        self.end = self.start + timedelta(seconds=self.duration_secs)
+
+        if not self.start or not self.end or not self.frames:
+            raise ValueError(f"Error reading {self.path_or_url}. Faulty wavfile")
+
+
 
 
 class GenericWavFile(AudioFile):
