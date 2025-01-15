@@ -97,9 +97,9 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                             self.log.info(
                                 f"Found file {filename} with timestamp {wav_dt}"
                             )
-                            wav_files.append(GenericWavFile(self.log, filename, wav_dt))
+                            wav_files.append(GenericWavFile(self.log, str(filename), wav_dt))
 
-                if scheme == "s3":
+                elif scheme == "s3":
                     client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
                     for day_hour in pd.date_range(start=start_dt, end=end_dt, freq="h"):
                         bucket = f"{bucket_name}-{day_hour.year:04d}"
@@ -152,8 +152,9 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                     )
                     return
 
-                # sort the files by start time
-                wav_files.sort(key=lambda x: x.start)
+                # sort the files by start times
+                wav_files.sort(key=lambda x: x.start, reverse=False)
+
 
                 # create a dataframe from the wav files
                 self.log.debug(
@@ -166,6 +167,8 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
 
                     # concatenate the metadata to the dataframe
                     self.df = pd.concat([self.df, df_wav], axis=0)
+
+                self.df = self.df.sort_values(by=["start"])
 
                 self.log.debug(f"{self.log_prefix}  Running metadata json_gen for {day}")
                 json_gen = JsonGenerator(
