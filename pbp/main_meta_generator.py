@@ -70,6 +70,16 @@ def main():
                 xml_dir=xml_dir.as_posix(),
             )
             generator.run()
+        if opts.recorder == "RESEA":
+            generator = RESEAMetadataGenerator(
+                log=log,
+                uri=opts.uri,
+                json_base_dir=json_dir.as_posix(),
+                prefixes=opts.prefix,
+                start=start,
+                end=end
+            )
+            generator.run()
     except KeyboardInterrupt:
         log.info("INTERRUPTED")
 
