@@ -150,7 +150,7 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                         f"{self.log_prefix}  No files found to process that "
                         f"cover the period {start_dt} - {end_dt}"
                     )
-                    return
+
 
                 # sort the files by start times
                 wav_files.sort(key=lambda x: x.start, reverse=False)
