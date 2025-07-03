@@ -55,15 +55,19 @@ class MetadataGeneratorAbstract(object):
             if start.hour == 0 and start.minute == 0 and start.second == 0:
                 pass
             else:
-                raise ValueError("Start must be of type datetime.date or a datetime.datetime object at 00:00:00. "
-                                 "Otherwise that would be the start of the HMD computation.")
+                raise ValueError(
+                    "Start must be of type datetime.date or a datetime.datetime object at 00:00:00. "
+                    "Otherwise that would be the start of the HMD computation."
+                )
 
         if type(end) is datetime:
             if end.hour == 0 and end.minute == 0 and end.second == 0:
                 pass
             else:
-                raise ValueError("End must be of type datetime.date or a datetime.datetime object at 00:00:00. "
-                                 "Otherwise that would be the start of the HMD computation.")
+                raise ValueError(
+                    "End must be of type datetime.date or a datetime.datetime object at 00:00:00. "
+                    "Otherwise that would be the start of the HMD computation."
+                )
 
     @property
     def seconds_per_file(self):

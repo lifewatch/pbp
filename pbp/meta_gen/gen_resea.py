@@ -65,9 +65,7 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
 
         # gs is not supported for RTSys
         if scheme == "gs":
-            self.log.error(
-                f"{self.log_prefix} GS is not supported for RTSys audio files"
-            )
+            self.log.error(f"{self.log_prefix} GS is not supported for RTSys audio files")
             return
 
         # Run for each day in the range
@@ -97,7 +95,9 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                             self.log.info(
                                 f"Found file {filename} with timestamp {wav_dt}"
                             )
-                            wav_files.append(GenericWavFile(self.log, str(filename), wav_dt))
+                            wav_files.append(
+                                GenericWavFile(self.log, str(filename), wav_dt)
+                            )
 
                 elif scheme == "s3":
                     client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
@@ -155,7 +155,6 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                 # sort the files by start times
                 wav_files.sort(key=lambda x: x.start, reverse=False)
 
-
                 # create a dataframe from the wav files
                 self.log.debug(
                     f"{self.log_prefix} creating dataframe from {len(wav_files)} files "
@@ -195,4 +194,3 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
             self.end,
         )
         self.log.info(f"Coverage plot saved to {plot_file}")
-

@@ -89,7 +89,7 @@ def get_datetime(time_str: str, prefixes: List[str]):
         "%Y%m%d%H%M%S",
         "%Y%m%dT%H%M%SZ",
         "%Y%m%dT%H%M%S",
-        "%Y-%m-%d_%H-%M-%S"
+        "%Y-%m-%d_%H-%M-%S",
     ]
     for fmt in possible_dt_formats:
         try:
